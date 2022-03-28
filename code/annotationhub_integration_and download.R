@@ -25,3 +25,17 @@ grep("TfbsGm12878",mcols(ahub.gr)$title,value=T)
 grep("Hmec|HMEC|hmec",mcols(ahub.gr)$title,value=T)
 grep("H1hesc|\\.H1\\.",mcols(ahub.gr)$title,value=T)
 grep("Gm12878|gm12878",mcols(ahub.gr)$title,value=T)
+
+hmec_H3K27ac_FC_BW<-ahub.bw[[grep("E119-H3K27ac.fc.signal",mcols(ahub.bw)$title)]]
+seqinfo(hmec_H3K27ac_FC_BW)
+export.bw(hmec_H3K27ac_FC_BW,"~/Documents/multires_bhicect/data/epi_data/HMEC/Bioconductor/H3K27ac/hmec_H3K27ac_FC.bigWig")
+ahub.bw[grep("E119-H3K27ac.imputed.pval.signal",mcols(ahub.bw)$title)]
+
+ahub.bw[grep("E003-H3K27ac.fc.signal",mcols(ahub.bw)$title)]
+ahub.bw[grep("E003-H3K27ac.imputed.pval.signal",mcols(ahub.bw)$title)]
+
+ahub.bw[grep("E116-H3K27ac.fc.signal",mcols(ahub.bw)$title)]
+ahub.bw[grep("E116-H3K27ac.imputed.pval.signal",mcols(ahub.bw)$title)]
+
+
+
