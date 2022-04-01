@@ -38,10 +38,10 @@ Build_GRange_fn<-function(chromo,res,bins,res_num){
 }
 
 #-----------------------------------------
-CAGE_tss_file<-"./data/CAGE_tbl/GM12878_CAGE_TSS_tbl.Rda"
-CAGE_enh_file<-"./data/CAGE_tbl/GM12878_CAGE_enh_tbl.Rda"
-candidate_hub_file<-"~/Documents/multires_bhicect/Bootstrapp_fn/data/candidate_compound_hub/GM12878_5kb_tss_compound_hub.Rda"
-spec_res_file<-"~/Documents/multires_bhicect/data/GM12878/spec_res/"
+CAGE_tss_file<-"./data/CAGE_tbl/HMEC_CAGE_TSS_tbl.Rda"
+CAGE_enh_file<-"./data/CAGE_tbl/HMEC_CAGE_enh_tbl.Rda"
+candidate_hub_file<-"~/Documents/multires_bhicect/Bootstrapp_fn/data/candidate_compound_hub/HMEC_5kb_tss_compound_hub.Rda"
+spec_res_file<-"~/Documents/multires_bhicect/data/HMEC/spec_res/"
 #-----------------------------------------
 enh_tbl<-data_tbl_load_fn(CAGE_enh_file)
 tss_tbl<-data_tbl_load_fn(CAGE_tss_file)
@@ -77,7 +77,7 @@ countOverlaps(hub_GRange,tss_GRange)
 
 
 hub_order<-tibble(chr=top_compound_hub_5kb_tbl$chr,hub=top_compound_hub_5kb_tbl$parent.hub,enh=countOverlaps(hub_GRange,enh_GRange),tss=countOverlaps(hub_GRange,tss_GRange)) %>% 
-  mutate(f=(enh)/(tss)) %>% arrange(desc(f)) %>% 
+  mutate(f=(enh)/(tss+enh)) %>% arrange(desc(f)) %>% 
   mutate(ID=paste(chr,hub,sep="_")) %>% 
   dplyr::select(ID)
 
@@ -88,7 +88,9 @@ hub_re_count_tbl %>%
   left_join(.,chr_ratio_tbl) %>% 
   mutate(hub=fct_relevel(hub,hub_order$ID)) %>% 
   ggplot(.,aes(hub,count,fill=set))+
-  geom_bar(stat='identity',position='fill')
+  geom_bar(stat='identity',position='fill')+
+  theme( axis.text.x=element_blank(),
+         axis.ticks.x=element_blank())
 
 enh_tbl %>% 
   group_by(chr) %>% 
@@ -103,10 +105,18 @@ enh_tbl %>%
 enh_tss_count_tbl<-tibble(chr=top_compound_hub_5kb_tbl$chr,hub=top_compound_hub_5kb_tbl$parent.hub,enh=countOverlaps(hub_GRange,enh_GRange),tss=countOverlaps(hub_GRange,tss_GRange))
 chr_ratio_tbl<-enh_tss_count_tbl %>% 
   group_by(chr) %>% 
-  summarise(f=1-sum(enh)/sum(tss))
+  summarise(f=sum(enh)/(sum(tss)+sum(enh)))
 
-enh_tss_count_tbl %>% 
+dt <- enh_tss_count_tbl %>% 
   left_join(.,chr_ratio_tbl) %>% 
-  mutate(f.dev=(1-(enh/(tss+1))) - f) %>% 
-  summarise(m=median(f.dev))
-  
+  mutate(f.dev=(enh/(tss+enh))/f)
+dens <- density(dt$f.dev)
+df <- data.frame(x=dens$x, y=dens$y)
+probs <- c(0, 0.25, 0.5, 0.75, 1)
+quantiles <- quantile(dt$f.dev, prob=probs)
+df$quant <- factor(findInterval(df$x,quantiles))
+ggplot(df, aes(x,y)) + geom_line() + 
+  geom_ribbon(aes(ymin=0, ymax=y, fill=quant)) +
+  geom_vline(xintercept = 1,lty=2)+
+  scale_x_continuous(breaks=quantiles) + 
+  scale_fill_brewer(guide="none")
