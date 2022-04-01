@@ -40,18 +40,8 @@ Build_GRange_fn<-function(chromo,res,bins,res_num){
 candidate_hub_file<-"~/Documents/multires_bhicect/Bootstrapp_fn/data/candidate_compound_hub/GM12878_5kb_tss_compound_hub.Rda"
 spec_res_file<-"~/Documents/multires_bhicect/data/GM12878/spec_res/"
 
-CAGE_enh_GRange_file<-"~/Documents/multires_bhicect/Bootstrapp_fn/data/GRanges/CAGE_enh_GM12878_Grange.Rda"
-feature_bigWig_file<-"~/Documents/multires_bhicect/data/epi_data/GM12878/RNAP2/ENCFF368HBX_GM12878_RNAP2_FC.bigWig"
+CAGE_GRange_file<-"./data/CAGE_tbl/GM12878_CAGE_TSS_tbl.Rda"
 #-----------------------------------------
-cage_enh_GRange<-data_tbl_load_fn(CAGE_enh_GRange_file)
-bwf_manual <-BigWigFile(feature_bigWig_file)
-tmp_max<-summary(bwf_manual,cage_enh_GRange,type="max")
-
-
-feature_tbl<-tibble(as.data.frame(unlist(tmp_max))) %>% 
-  dplyr::rename(max.lvl=score) %>% 
-  mutate(enh=paste(seqnames,start,end,sep="_"))
-
 compound_hub_5kb_tbl<-data_tbl_load_fn(candidate_hub_file)
 
 top_compound_hub_5kb_tbl<-do.call(bind_rows,map(unique(compound_hub_5kb_tbl$chr),function(chromo){
@@ -68,11 +58,20 @@ top_compound_hub_5kb_tbl<-Build_coord_fn(top_compound_hub_5kb_tbl,spec_res_file)
     Build_GRange_fn(chromo,res,bins,res_num)
   }))
 
+feature_tbl<-data_tbl_load_fn(CAGE_GRange_file)
+
+cage_GRange<-GRanges(seqnames=feature_tbl$chr,
+                         ranges = IRanges(start=feature_tbl$start,
+                                          end=feature_tbl$end
+                         ))
+mcols(cage_GRange)<-tibble(Id=feature_tbl$Id)
+
 top_compound_hub_5kb_tbl<-top_compound_hub_5kb_tbl %>% 
   mutate(peak.content=map(GRange,function(x){
-    tmp_hit<-unique(queryHits(findOverlaps(cage_enh_GRange,x)))
-    paste(seqnames(cage_enh_GRange)[tmp_hit],start(cage_enh_GRange)[tmp_hit],end(cage_enh_GRange)[tmp_hit],sep="_")
+    tmp_hit<-unique(queryHits(findOverlaps(cage_GRange,x)))
+    return(mcols(cage_GRange)$Id[tmp_hit])
   }))
+
 
 in_set<-top_compound_hub_5kb_tbl %>% 
   #  filter(res=="50kb") %>% 
@@ -81,25 +80,26 @@ in_set<-top_compound_hub_5kb_tbl %>%
   distinct() %>% unlist
 
 
-zero_tresh<-10**(floor(min(log10(feature_tbl$max.lvl[feature_tbl$max.lvl>0]),na.rm=T)) -1)
+#zero_tresh<-10**(floor(min(log10(feature_tbl$m[feature_tbl$m>0]),na.rm=T)) -1)
 feature_tbl %>% 
-  mutate(hub.io=ifelse(enh %in% in_set,"in","out")) %>% 
-  ggplot(.,aes(max.lvl+zero_tresh,color=hub.io))+geom_density()+
-  scale_x_log10(breaks=c(zero_tresh,0.1,1,10,100),labels=c(0,0.1,1,10,100))+ 
+  mutate(hub.io=ifelse(Id %in% in_set,"in","out")) %>% 
+  ggplot(.,aes(m,color=hub.io))+geom_density()+
+  scale_x_log10()+ 
   scale_color_brewer(palette="Set1")+
-  xlab("fold-change")
-ggsave("~/Documents/multires_bhicect/weeklies/weekly54/img/H3K27ac_H1_enh_hub_io.png")
+  xlab("CAGE Intensity (tpm)")
+
 
 in_vec<-feature_tbl %>% 
-  mutate(hub.io=ifelse(enh %in% in_set,"in","out")) %>% 
+  mutate(hub.io=ifelse(Id %in% in_set,"in","out")) %>% 
   filter(hub.io=="in") %>% 
-  dplyr::select(max.lvl) %>% 
+  dplyr::select(m) %>% 
   unlist
-  
+
 out_vec<-feature_tbl %>% 
-  mutate(hub.io=ifelse(enh %in% in_set,"in","out")) %>% 
+  mutate(hub.io=ifelse(Id %in% in_set,"in","out")) %>% 
   filter(hub.io=="out") %>% 
-  dplyr::select(max.lvl) %>% 
+  dplyr::select(m) %>% 
   unlist
 
 wilcox.test(in_vec,out_vec,alternative = "greater")$p.value
+
