@@ -37,10 +37,10 @@ Build_GRange_fn<-function(chromo,res,bins,res_num){
   
 }
 #-----------------------------------------
-candidate_hub_file<-"~/Documents/multires_bhicect/Bootstrapp_fn/data/candidate_compound_hub/GM12878_5kb_tss_compound_hub.Rda"
-spec_res_file<-"~/Documents/multires_bhicect/data/GM12878/spec_res/"
+candidate_hub_file<-"~/Documents/multires_bhicect/Bootstrapp_fn/data/candidate_compound_hub/H1_5kb_tss_compound_hub.Rda"
+spec_res_file<-"~/Documents/multires_bhicect/data/H1/Dekker/spec_res/"
 
-CAGE_GRange_file<-"./data/CAGE_tbl/GM12878_CAGE_TSS_tbl.Rda"
+CAGE_GRange_file<-"./data/CAGE_tbl/H1_CAGE_enh_tbl.Rda"
 #-----------------------------------------
 compound_hub_5kb_tbl<-data_tbl_load_fn(candidate_hub_file)
 
@@ -87,7 +87,7 @@ feature_tbl %>%
   scale_x_log10()+ 
   scale_color_brewer(palette="Set1")+
   xlab("CAGE Intensity (tpm)")
-
+ggsave("~/Documents/multires_bhicect/weeklies/weekly55/img/H1_enh_io_cage_I.png")
 
 in_vec<-feature_tbl %>% 
   mutate(hub.io=ifelse(Id %in% in_set,"in","out")) %>% 
