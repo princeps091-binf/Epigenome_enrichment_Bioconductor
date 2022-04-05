@@ -37,11 +37,11 @@ Build_GRange_fn<-function(chromo,res,bins,res_num){
   
 }
 #-----------------------------------------
-candidate_hub_file<-"~/Documents/multires_bhicect/Bootstrapp_fn/data/candidate_compound_hub/GM12878_5kb_tss_compound_hub.Rda"
-spec_res_file<-"~/Documents/multires_bhicect/data/GM12878/spec_res/"
+candidate_hub_file<-"~/Documents/multires_bhicect/Bootstrapp_fn/data/candidate_compound_hub/H1_5kb_tss_compound_hub.Rda"
+spec_res_file<-"~/Documents/multires_bhicect/data/H1/Dekker/spec_res/"
 
-CAGE_enh_GRange_file<-"~/Documents/multires_bhicect/Bootstrapp_fn/data/GRanges/CAGE_enh_GM12878_Grange.Rda"
-feature_bigWig_file<-"~/Documents/multires_bhicect/data/epi_data/GM12878/RNAP2/ENCFF368HBX_GM12878_RNAP2_FC.bigWig"
+CAGE_enh_GRange_file<-"~/Documents/multires_bhicect/Bootstrapp_fn/data/GRanges/CAGE_tss_H1_Grange.Rda"
+feature_bigWig_file<-"~/Documents/multires_bhicect/data/epi_data/H1/RNAP2/ENCFF339CZB_H1_RNAP2_FC.bigWig"
 #-----------------------------------------
 cage_enh_GRange<-data_tbl_load_fn(CAGE_enh_GRange_file)
 bwf_manual <-BigWigFile(feature_bigWig_file)
@@ -88,7 +88,7 @@ feature_tbl %>%
   scale_x_log10(breaks=c(zero_tresh,0.1,1,10,100),labels=c(0,0.1,1,10,100))+ 
   scale_color_brewer(palette="Set1")+
   xlab("fold-change")
-ggsave("~/Documents/multires_bhicect/weeklies/weekly54/img/H3K27ac_H1_enh_hub_io.png")
+ggsave("~/Documents/multires_bhicect/weeklies/weekly55/img/RNAP2_H1_tss_hub_io.png")
 
 in_vec<-feature_tbl %>% 
   mutate(hub.io=ifelse(enh %in% in_set,"in","out")) %>% 
