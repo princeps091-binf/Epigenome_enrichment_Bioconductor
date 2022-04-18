@@ -42,7 +42,7 @@ candidate_hub_file<-"~/Documents/multires_bhicect/Bootstrapp_fn/data/DAGGER_tbl/
 spec_res_file<-"~/Documents/multires_bhicect/data/GM12878/spec_res/"
 
 CAGE_enh_GRange_file<-"~/Documents/multires_bhicect/Bootstrapp_fn/data/GRanges/CAGE_enh_GM12878_Grange.Rda"
-feature_bigWig_file<-"~/Documents/multires_bhicect/data/epi_data/GM12878/H3K27ac/ENCFF180LKW_GM12878_FC.bigWig"
+feature_bigWig_file<-"~/Documents/multires_bhicect/data/epi_data/GM12878/RNAP2/ENCFF368HBX_GM12878_RNAP2_FC.bigWig"
 #-----------------------------------------
 cage_enh_GRange<-data_tbl_load_fn(CAGE_enh_GRange_file)
 bwf_manual <-BigWigFile(feature_bigWig_file)
@@ -84,7 +84,7 @@ feature_tbl %>%
   scale_x_log10(breaks=c(zero_tresh,0.1,1,10,100),labels=c(0,0.1,1,10,100))+ 
   scale_color_brewer(palette="Set1")+
   xlab("fold-change")
-ggsave("~/Documents/multires_bhicect/weeklies/weekly55/img/RNAP2_H1_tss_hub_io.png")
+ggsave("~/Documents/multires_bhicect/weeklies/group_meeting/group_meeting_04_2022/img/RNAP2_GM12878_enh_hub_io.png")
 
 in_vec<-feature_tbl %>% 
   mutate(hub.io=ifelse(enh %in% in_set,"in","out")) %>% 
