@@ -37,10 +37,11 @@ Build_GRange_fn<-function(chromo,res,bins,res_num){
   
 }
 #-----------------------------------------
-candidate_hub_file<-"~/Documents/multires_bhicect/Bootstrapp_fn/data/DAGGER_tbl/GM12878_union_trans_res_dagger_tbl.Rda"
-spec_res_file<-"~/Documents/multires_bhicect/data/GM12878/spec_res/"
+#candidate_hub_file<-"~/Documents/multires_bhicect/Bootstrapp_fn/data/DAGGER_tbl/GM12878_union_trans_res_dagger_tbl.Rda"
+candidate_hub_file<-"~/Documents/multires_bhicect/BHiCect_poisson_cluster_detect/data/pval_tbl/DAGGER/HMEC_poisson_DAGGER_01.Rda"
+spec_res_file<-"~/Documents/multires_bhicect/data/HMEC/spec_res/"
 
-CAGE_GRange_file<-"./data/CAGE_tbl/GM12878_CAGE_enh_tbl.Rda"
+CAGE_GRange_file<-"./data/CAGE_tbl/HMEC_CAGE_enh_tbl.Rda"
 #-----------------------------------------
 compound_hub_5kb_tbl<-data_tbl_load_fn(candidate_hub_file)
 
