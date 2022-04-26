@@ -26,6 +26,7 @@ Build_coord_fn<-function(top_compound_hub_5kb_tbl,spec_res_file){
       mutate(bins=map(bins,as.numeric)) 
     
   }))
+  return(coord_tbl)
 }
 
 Build_GRange_fn<-function(chromo,res,bins,res_num){
@@ -39,12 +40,12 @@ Build_GRange_fn<-function(chromo,res,bins,res_num){
 }
 #-----------------------------------------
 #candidate_hub_file<-"~/Documents/multires_bhicect/Bootstrapp_fn/data/DAGGER_tbl/GM12878_union_trans_res_dagger_tbl.Rda"
-candidate_hub_file<-"~/Documents/multires_bhicect/BHiCect_poisson_cluster_detect/data/pval_tbl/DAGGER/HMEC_poisson_DAGGER_01.Rda"
+candidate_hub_file<-"~/Documents/multires_bhicect/Bootstrapp_fn/data/DAGGER_tbl/trans_res/HMEC_union_top_trans_res_dagger_tbl.Rda"
 
 spec_res_file<-"~/Documents/multires_bhicect/data/HMEC/spec_res/"
 
 CAGE_enh_GRange_file<-"~/Documents/multires_bhicect/Bootstrapp_fn/data/GRanges/CAGE_enh_HMEC_Grange.Rda"
-feature_bigWig_file<-"~/Documents/multires_bhicect/data/epi_data/HMEC/ENCODE/RNAP2/ENCFF728WWJ_HMEC_RNAP2_FC.bigWig"
+feature_bigWig_file<-"~/Documents/multires_bhicect/data/epi_data/HMEC/ENCODE/H3K27ac/ENCFF981WTU_FC_HMEC_H3K27ac.bigWig"
 #-----------------------------------------
 cage_enh_GRange<-data_tbl_load_fn(CAGE_enh_GRange_file)
 bwf_manual <-BigWigFile(feature_bigWig_file)
@@ -55,7 +56,8 @@ feature_tbl<-tibble(as.data.frame(unlist(tmp_max))) %>%
   dplyr::rename(max.lvl=score) %>% 
   mutate(enh=paste(seqnames,start,end,sep="_"))
 
-trans_hub_tbl<-data_tbl_load_fn(candidate_hub_file)
+trans_hub_tbl<-data_tbl_load_fn(candidate_hub_file) %>% 
+  mutate(res=str_split_fixed(node,"_",2)[,1])
 
 plan(multisession,workers=3)
 trans_hub_tbl<-Build_coord_fn(trans_hub_tbl,spec_res_file) %>% 
@@ -73,7 +75,7 @@ trans_hub_tbl<-trans_hub_tbl %>%
 plan(sequential)
 
 in_set<-trans_hub_tbl %>% 
-  #  filter(res=="50kb") %>% 
+  filter(res=="50kb") %>% 
   dplyr::select(peak.content) %>% 
   unnest(cols=c(peak.content)) %>% 
   distinct() %>% unlist
