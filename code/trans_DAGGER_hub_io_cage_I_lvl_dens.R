@@ -1,6 +1,7 @@
 library(tidyverse)
 library(GenomicRanges)
 library(rtracklayer)
+library(svglite)
 options(scipen = 999999999)
 res_set <- c('1Mb','500kb','100kb','50kb','10kb','5kb')
 res_num <- c(1e6,5e5,1e5,5e4,1e4,5e3)
@@ -37,13 +38,14 @@ Build_GRange_fn<-function(chromo,res,bins,res_num){
   
 }
 #-----------------------------------------
-#candidate_hub_file<-"~/Documents/multires_bhicect/Bootstrapp_fn/data/DAGGER_tbl/GM12878_union_trans_res_dagger_tbl.Rda"
-candidate_hub_file<-"~/Documents/multires_bhicect/BHiCect_poisson_cluster_detect/data/pval_tbl/DAGGER/HMEC_poisson_DAGGER_01.Rda"
+candidate_hub_file<-"~/Documents/multires_bhicect/Bootstrapp_fn/data/DAGGER_tbl/trans_res/HMEC_union_top_trans_res_dagger_tbl.Rda"
+#candidate_hub_file<-"~/Documents/multires_bhicect/BHiCect_poisson_cluster_detect/data/pval_tbl/DAGGER/HMEC_poisson_DAGGER_01.Rda"
 spec_res_file<-"~/Documents/multires_bhicect/data/HMEC/spec_res/"
 
 CAGE_GRange_file<-"./data/CAGE_tbl/HMEC_CAGE_enh_tbl.Rda"
 #-----------------------------------------
-compound_hub_5kb_tbl<-data_tbl_load_fn(candidate_hub_file)
+compound_hub_5kb_tbl<-data_tbl_load_fn(candidate_hub_file) %>% 
+  mutate(res=str_split_fixed(node,"_",2)[,1])
 
 compound_hub_5kb_tbl<-Build_coord_fn(compound_hub_5kb_tbl,spec_res_file) %>% 
   mutate(GRange=pmap(list(chr,res,bins),function(chromo,res,bins){
@@ -79,8 +81,7 @@ feature_tbl %>%
   scale_x_log10()+ 
   scale_color_brewer(palette="Set1")+
   xlab("CAGE Intensity (tpm)")
-ggsave("~/Documents/multires_bhicect/weeklies/group_meeting/group_meeting_04_2022/img/GM12878_enh_io_cage_I.png")
-
+#ggsave("~/Documents/multires_bhicect/Poster/img/F4/HMEC_enh_io_cage_I.svg")
 in_vec<-feature_tbl %>% 
   mutate(hub.io=ifelse(Id %in% in_set,"in","out")) %>% 
   filter(hub.io=="in") %>% 
