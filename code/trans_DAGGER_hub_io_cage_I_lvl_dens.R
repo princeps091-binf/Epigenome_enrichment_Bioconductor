@@ -80,8 +80,10 @@ feature_tbl %>%
   ggplot(.,aes(m,color=hub.io))+geom_density()+
   scale_x_log10()+ 
   scale_color_brewer(palette="Set1")+
+  theme_minimal()+
   xlab("CAGE Intensity (tpm)")
-#ggsave("~/Documents/multires_bhicect/Poster/img/F4/HMEC_enh_io_cage_I.svg")
+ggsave("~/Documents/multires_bhicect/manuscripts/BootHiCC/Figures/F4/HMEC_enh_io_cage_I.svg")
+
 in_vec<-feature_tbl %>% 
   mutate(hub.io=ifelse(Id %in% in_set,"in","out")) %>% 
   filter(hub.io=="in") %>% 

@@ -75,7 +75,7 @@ trans_hub_tbl<-trans_hub_tbl %>%
 plan(sequential)
 
 in_set<-trans_hub_tbl %>% 
-  filter(res=="50kb") %>% 
+#  filter(res=="50kb") %>% 
   dplyr::select(peak.content) %>% 
   unnest(cols=c(peak.content)) %>% 
   distinct() %>% unlist
@@ -87,8 +87,9 @@ feature_tbl %>%
   ggplot(.,aes(max.lvl+zero_tresh,color=hub.io))+geom_density()+
   scale_x_log10(breaks=c(zero_tresh,0.1,1,10,100),labels=c(0,0.1,1,10,100))+ 
   scale_color_brewer(palette="Set1")+
+  theme_minimal()+
   xlab("fold-change")
-ggsave("~/Documents/multires_bhicect/Poster/img/F4/RNAP2_HMEC_enh_hub_io.svg")
+ggsave("~/Documents/multires_bhicect/manuscripts/BootHiCC/Figures/F4/RNAP2_HMEC_enh_hub_io.svg")
 
 in_vec<-feature_tbl %>% 
   mutate(hub.io=ifelse(enh %in% in_set,"in","out")) %>% 
