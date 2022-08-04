@@ -75,8 +75,13 @@ in_set<-compound_hub_5kb_tbl %>%
 
 
 #zero_tresh<-10**(floor(min(log10(feature_tbl$m[feature_tbl$m>0]),na.rm=T)) -1)
-feature_tbl %>% 
-  mutate(hub.io=ifelse(Id %in% in_set,"in","out")) %>% 
+feature_tbl<-feature_tbl %>% 
+  mutate(hub.io=ifelse(Id %in% in_set,"in","out"))
+save(feature_tbl,file="~/Documents/multires_bhicect/Manuscript_figures/data/F3/HMEC_CAGE_enh_hub_io_tbl.Rda")
+
+
+
+feature_tbl%>% 
   ggplot(.,aes(m,color=hub.io))+geom_density()+
   scale_x_log10()+ 
   scale_color_brewer(palette="Set1")+

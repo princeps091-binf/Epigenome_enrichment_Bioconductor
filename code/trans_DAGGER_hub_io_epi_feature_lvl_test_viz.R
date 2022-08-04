@@ -45,7 +45,7 @@ candidate_hub_file<-"~/Documents/multires_bhicect/Bootstrapp_fn/data/DAGGER_tbl/
 spec_res_file<-"~/Documents/multires_bhicect/data/HMEC/spec_res/"
 
 CAGE_enh_GRange_file<-"~/Documents/multires_bhicect/Bootstrapp_fn/data/GRanges/CAGE_enh_HMEC_Grange.Rda"
-feature_bigWig_file<-"~/Documents/multires_bhicect/data/epi_data/HMEC/ENCODE/RNAP2/ENCFF728WWJ_HMEC_RNAP2_FC.bigWig"
+feature_bigWig_file<-"~/Documents/multires_bhicect/data/epi_data/HMEC/ENCODE/H3K27ac/ENCFF981WTU_FC_HMEC_H3K27ac.bigWig"
 #-----------------------------------------
 cage_enh_GRange<-data_tbl_load_fn(CAGE_enh_GRange_file)
 bwf_manual <-BigWigFile(feature_bigWig_file)
@@ -82,9 +82,13 @@ in_set<-trans_hub_tbl %>%
 
 
 zero_tresh<-10**(floor(min(log10(feature_tbl$max.lvl[feature_tbl$max.lvl>0]),na.rm=T)) -1)
-feature_tbl %>% 
-  mutate(hub.io=ifelse(enh %in% in_set,"in","out")) %>% 
-  ggplot(.,aes(max.lvl+zero_tresh,color=hub.io))+geom_density()+
+feature_tbl<-feature_tbl %>% 
+  mutate(hub.io=ifelse(enh %in% in_set,"in","out"),
+         max.lvl=ifelse(max.lvl<=0,zero_tresh,max.lvl))
+save(feature_tbl,file="~/Documents/multires_bhicect/Manuscript_figures/data/F3/HMEC_H3K27ac_enh_hub_io_tbl.Rda")
+
+feature_tbl%>% 
+  ggplot(.,aes(max.lvl,color=hub.io))+geom_density()+
   scale_x_log10(breaks=c(zero_tresh,0.1,1,10,100),labels=c(0,0.1,1,10,100))+ 
   scale_color_brewer(palette="Set1")+
   theme_minimal()+
